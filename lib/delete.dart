@@ -23,6 +23,7 @@ class homepageState extends State<Delete> {
   TextEditingController _emailConroller;
   TextEditingController _phoneConroller;
   TextEditingController _matriculaConroller;
+  TextEditingController _fotoConroller;
 
   Student _selectStudent;
   bool _isUpdating;
@@ -42,6 +43,7 @@ class homepageState extends State<Delete> {
     _emailConroller = TextEditingController();
     _phoneConroller = TextEditingController();
     _matriculaConroller = TextEditingController();
+    _fotoConroller = TextEditingController();
     //Llamar al método que llena la DataTable
     _selectData;
   }
@@ -79,7 +81,7 @@ class homepageState extends State<Delete> {
       return;
     }
     //_showProgress('Adding Student...');
-    BDConnections.insertData(_firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text)
+    BDConnections.insertData(_firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text, _fotoConroller.text)
         .then((result) {
       if ('sucess' == result) {
         _showSnackBar(context, result);

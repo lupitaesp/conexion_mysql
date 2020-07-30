@@ -3,6 +3,9 @@ import 'package:http/http.dart' as http;
 import 'Student.dart';
 import 'package:flutter/material.dart';
 import 'bd_connections.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'convertidor.dart';
 
 class Insert extends StatefulWidget {
   Insert() : super();
@@ -21,9 +24,11 @@ class homepageState extends State<Insert> {
   TextEditingController _emailConroller;
   TextEditingController _phoneConroller;
   TextEditingController _matriculaConroller;
+  TextEditingController _fotoConroller;
 
   Student _selectStudent;
   bool _isUpdating;
+  String imagen;
   //String _titleProgress;
 
   @override
@@ -40,6 +45,7 @@ class homepageState extends State<Insert> {
     _emailConroller = TextEditingController();
     _phoneConroller = TextEditingController();
     _matriculaConroller = TextEditingController();
+    _fotoConroller = TextEditingController();
     //Llamar al método que llena la DataTable
     _selectData;
   }
@@ -72,12 +78,12 @@ class homepageState extends State<Insert> {
 
   //INSERT DATA
   _insertData() {
-    if (_firstnameConroller.text.isEmpty || _lastname1Conroller.text.isEmpty || _lastname2Conroller.text.isEmpty || _emailConroller.text.isEmpty || _phoneConroller.text.isEmpty || _matriculaConroller.text.isEmpty) {
+    if (_firstnameConroller.text.isEmpty || _lastname1Conroller.text.isEmpty || _lastname2Conroller.text.isEmpty || _emailConroller.text.isEmpty || _phoneConroller.text.isEmpty || _matriculaConroller.text.isEmpty || _fotoConroller.text.isEmpty) {
       print("Empy fields");
       return;
     }
     //_showProgress('Adding Student...');
-    BDConnections.insertData(_firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text)
+    BDConnections.insertData(_firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text, imagen)
         .then((result) {
       if ('sucess' == result) {
         _showSnackBar(context, result);
@@ -87,8 +93,9 @@ class homepageState extends State<Insert> {
         _emailConroller.text = "";
         _phoneConroller.text = "";
         _matriculaConroller.text = "";
+        _fotoConroller.text = "";
         //Llamar la consulta general
-        _selectData;  //REFRESH LIST AFTER ADDING
+        _selectData; //REFRESH LIST AFTER ADDING
         _clearValues();
       }
     });
@@ -134,6 +141,17 @@ class homepageState extends State<Insert> {
     });
   }
 
+  //METODO PARA FOTO
+  pickImagefromGallery(){
+    ImagePicker.pickImage(source: ImageSource.gallery).then((imgFile){
+      String  imgString = Convertir.base64String(imgFile.readAsBytesSync());
+      imagen = imgString;
+      Navigator.of(context).pop();
+      _fotoConroller.text = "Campo lleno";
+      return imagen;
+    });
+  }
+
   //CLEAR TEXTFIELD VALUES
   _clearValues(){
         _firstnameConroller.text = "";
@@ -152,117 +170,6 @@ class homepageState extends State<Insert> {
         _phoneConroller.text = student.phone;
         _matriculaConroller.text = student.matricula;
   }
-
-  //******************************************************************
-  //************************CREATING DATA TABLE*****************************
-  /*SingleChildScrollView _body() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columns: [
-          DataColumn(label: Text('ID')),
-          DataColumn(label: Text('Name')),
-          DataColumn(label: Text('Last Name 1')),
-          DataColumn(label: Text('Last Name 2')),
-          DataColumn(label: Text('E-mail')),
-          DataColumn(label: Text('Phone')),
-          DataColumn(label: Text('Matricula')),
-          //SHOW A DELETE BUTTON
-          DataColumn(label: Text('DELETE'))
-        ],
-        rows: _Students.map((student) => DataRow(
-            cells: [
-              //COMO ESTA EN EL ARCHIVO STUDENT.DART
-              //ADD TAP IN ROW AND POPULATE THE TEXTFIELDS WITH THE CORRESPONDING VALUES TO UPDATE
-
-              DataCell(Text(student.id),
-              onTap: (){
-                _showValues(student);
-                // Set the selected student to update
-                _selectStudent = student;
-                // Set flag updating tu true to indicate in Update Mode
-                setState(() {
-                  _isUpdating = true;
-                });
-              }),
-
-              DataCell(Text(student.firstName.toUpperCase()),
-              onTap: (){
-                _showValues(student);
-                // Set the selected student to update
-                _selectStudent = student;
-                // Set flag updating tu true to indicate in Update Mode
-                setState(() {
-                  _isUpdating = true;
-                });
-              }),
-
-              DataCell(Text(student.lastName1.toUpperCase()),
-              onTap: (){
-                _showValues(student);
-                // Set the selected student to update
-                _selectStudent = student;
-                // Set flag updating tu true to indicate in Update Mode
-                setState(() {
-                  _isUpdating = true;
-                });
-              }),
-
-              DataCell(Text(student.lastName2.toUpperCase()),
-              onTap: (){
-                _showValues(student);
-                // Set the selected student to update
-                _selectStudent = student;
-                // Set flag updating tu true to indicate in Update Mode
-                setState(() {
-                  _isUpdating = true;
-                });
-              }),
-
-              DataCell(Text(student.email.toUpperCase()),
-              onTap: (){
-                _showValues(student);
-                // Set the selected student to update
-                _selectStudent = student;
-                // Set flag updating tu true to indicate in Update Mode
-                setState(() {
-                  _isUpdating = true;
-                });
-              }),
-
-              DataCell(Text(student.phone.toUpperCase()),
-              onTap: (){
-                _showValues(student);
-                // Set the selected student to update
-                _selectStudent = student;
-                // Set flag updating tu true to indicate in Update Mode
-                setState(() {
-                  _isUpdating = true;
-                });
-              }),
-
-              DataCell(Text(student.matricula.toUpperCase()),
-              onTap: (){
-                _showValues(student);
-                // Set the selected student to update
-                _selectStudent = student;
-                // Set flag updating tu true to indicate in Update Mode
-                setState(() {
-                  _isUpdating = true;
-                });
-              }),
-
-              DataCell(IconButton(icon: Icon(Icons.delete), 
-              onPressed: (){
-                _deleteData(student);
-              }
-              )),
-
-            ]),
-        ).toList(),
-      ),
-    );
-  }*/
 
   //******************************************************************
   @override
@@ -290,6 +197,20 @@ class homepageState extends State<Insert> {
           children: <Widget>[
             Container(
               child: Column(children: <Widget>[
+                //TEXT FORM FIELD PARA FOTO
+                Padding(
+                     padding: const EdgeInsets.all(20.0),
+                     child: TextField(
+                  controller: _fotoConroller,
+                  decoration: InputDecoration(
+                        labelText: "Photo",
+                        suffixIcon: RaisedButton(
+                          color: Colors.deepPurple[200],
+                            onPressed: pickImagefromGallery,
+                            child: Text("Select image", textAlign: TextAlign.center,),
+                        )),
+                  ),
+                   ),
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextField(controller: _firstnameConroller,
@@ -354,6 +275,7 @@ class homepageState extends State<Insert> {
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           _insertData();
+          _clearValues();
         },
         child: Icon(Icons.add),
       ),

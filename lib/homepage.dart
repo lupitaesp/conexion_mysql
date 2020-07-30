@@ -8,6 +8,7 @@ import 'insert.dart';
 import 'update.dart';
 import 'delete.dart';
 import 'select.dart';
+import 'convertidor.dart';
 
 class homepage extends StatefulWidget {
   homepage() : super();
@@ -26,9 +27,11 @@ class homepageState extends State<homepage> {
   TextEditingController _emailConroller;
   TextEditingController _phoneConroller;
   TextEditingController _matriculaConroller;
+  TextEditingController _fotoConroller;
 
   Student _selectStudent;
   bool _isUpdating;
+  String imagen;
   //String _titleProgress;
 
   @override
@@ -45,6 +48,7 @@ class homepageState extends State<homepage> {
     _emailConroller = TextEditingController();
     _phoneConroller = TextEditingController();
     _matriculaConroller = TextEditingController();
+    _fotoConroller = TextEditingController();
     //Llamar al método que llena la DataTable
     _selectData;
   }
@@ -82,7 +86,7 @@ class homepageState extends State<homepage> {
       return;
     }
     //_showProgress('Adding Student...');
-    BDConnections.insertData(_firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text)
+    BDConnections.insertData(_firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text, _fotoConroller.text)
         .then((result) {
       if ('sucess' == result) {
         _showSnackBar(context, result);
@@ -92,6 +96,7 @@ class homepageState extends State<homepage> {
         _emailConroller.text = "";
         _phoneConroller.text = "";
         _matriculaConroller.text = "";
+        _fotoConroller.text = "";
         //Llamar la consulta general
         _selectData;  //REFRESH LIST AFTER ADDING
         _clearValues();
@@ -147,6 +152,7 @@ class homepageState extends State<homepage> {
         _emailConroller.text = "";
         _phoneConroller.text = "";
         _matriculaConroller.text = "";
+        _fotoConroller.text = "";
   }
 
   _showValues(Student student){
@@ -156,6 +162,7 @@ class homepageState extends State<homepage> {
         _emailConroller.text = student.email;
         _phoneConroller.text = student.phone;
         _matriculaConroller.text = student.matricula;
+        imagen = student.foto;
   }
 
   //******************************************************************
@@ -172,6 +179,7 @@ class homepageState extends State<homepage> {
           DataColumn(label: Text('E-mail')),
           DataColumn(label: Text('Phone')),
           DataColumn(label: Text('Matricula')),
+          DataColumn(label: Text('Fotografía')),
           //SHOW A DELETE BUTTON
           //DataColumn(label: Text('DELETE'))
         ],
@@ -179,17 +187,6 @@ class homepageState extends State<homepage> {
             cells: [
               //COMO ESTA EN EL ARCHIVO STUDENT.DART
               //ADD TAP IN ROW AND POPULATE THE TEXTFIELDS WITH THE CORRESPONDING VALUES TO UPDATE
-
-              /*DataCell(Text(student.id),
-              onTap: (){
-                _showValues(student);
-                // Set the selected student to update
-                _selectStudent = student;
-                // Set flag updating tu true to indicate in Update Mode
-                setState(() {
-                  _isUpdating = true;
-                });
-              }),*/
 
               DataCell(Text(student.firstName.toUpperCase()),
               onTap: (){
@@ -257,11 +254,7 @@ class homepageState extends State<homepage> {
                 });
               }),
 
-              /*DataCell(IconButton(icon: Icon(Icons.delete), 
-              onPressed: (){
-                _deleteData(student);
-              }
-              )),*/
+              DataCell(Convertir.imageFromBase64sString(student.foto)),
 
             ]),
         ).toList(),
@@ -363,13 +356,7 @@ class homepageState extends State<homepage> {
                     fontSize: 20
                 ),
               ),
-              onTap: () {
-                Navigator.push(context,
-                    new MaterialPageRoute(
-                        builder: (context)
-                        => new Select()
-                    ));
-              }
+              onTap: () {}
             ),
           ],
         ),

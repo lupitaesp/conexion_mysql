@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'Student.dart';
 
 class BDConnections {
   //Direccion IPv4 de la computadora (Se encuentra con el comando "ipconfig")
-  static const SERVER = "http://192.168.0.8/Students/sqloperations.php";
+  static const SERVER = "http://192.168.0.6/Students/sqloperations.php";
   static const _CREATE_TABLE_COMMAND = "CREATE_TABLE";
   static const _SELECT_TABLE_COMMAND = "SELECT_TABLE";
   static const _INSERT_DATA_COMMAND = "INSERT_DATA";
@@ -64,7 +65,7 @@ class BDConnections {
   }
 
   //INSERT DATA ON DB
-  static Future<String> insertData(String first_name, String last_name1, String last_name2, String email, String phone, String matricula) async {
+  static Future<String> insertData(String first_name, String last_name1, String last_name2, String email, String phone, String matricula, imagen) async {
     try {
       //Mapeamos para comparar
       var map = Map<String, dynamic>();
@@ -75,10 +76,12 @@ class BDConnections {
       map['email'] = email;
       map['phone'] = phone;
       map['matricula'] = matricula;
+      map['foto'] = imagen;
 
       //Body es lo que estamos mapeando
       final response = await http.post(SERVER, body: map);
       print('INSERT response: ${response.body}');
+      print(imagen);
 
       if (200 == response.statusCode) {
         print("Sucess");
