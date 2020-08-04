@@ -78,12 +78,25 @@ class homepageState extends State<Insert> {
 
   //INSERT DATA
   _insertData() {
-    if (_firstnameConroller.text.isEmpty || _lastname1Conroller.text.isEmpty || _lastname2Conroller.text.isEmpty || _emailConroller.text.isEmpty || _phoneConroller.text.isEmpty || _matriculaConroller.text.isEmpty || _fotoConroller.text.isEmpty) {
+    if (_firstnameConroller.text.isEmpty ||
+        _lastname1Conroller.text.isEmpty ||
+        _lastname2Conroller.text.isEmpty ||
+        _emailConroller.text.isEmpty ||
+        _phoneConroller.text.isEmpty ||
+        _matriculaConroller.text.isEmpty ||
+        _fotoConroller.text.isEmpty) {
       print("Empy fields");
       return;
     }
     //_showProgress('Adding Student...');
-    BDConnections.insertData(_firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text, imagen)
+    BDConnections.insertData(
+            _firstnameConroller.text,
+            _lastname1Conroller.text,
+            _lastname2Conroller.text,
+            _emailConroller.text,
+            _phoneConroller.text,
+            _matriculaConroller.text,
+            imagen)
         .then((result) {
       if ('sucess' == result) {
         _showSnackBar(context, result);
@@ -115,13 +128,22 @@ class homepageState extends State<Insert> {
   }
 
   //UPDATE DATA
-  _updateData(Student student){
+  _updateData(Student student) {
     setState(() {
       _isUpdating = true;
     });
     //_showSnackBar('Updating Student...');
-    BDConnections.updateData(student.id, _firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text).then((result){
-      if('success' == result){
+    BDConnections.updateData(
+            student.id,
+            _firstnameConroller.text,
+            _lastname1Conroller.text,
+            _lastname2Conroller.text,
+            _emailConroller.text,
+            _phoneConroller.text,
+            _matriculaConroller.text,
+            _fotoConroller.text)
+        .then((result) {
+      if ('success' == result) {
         _selectData; //REFRESH LIST AFTER UPDATE
         setState(() {
           _isUpdating = false;
@@ -131,44 +153,45 @@ class homepageState extends State<Insert> {
     });
   }
 
-  //DELETE DATA 
-  _deleteData(Student student){
+  //DELETE DATA
+  _deleteData(Student student) {
     //_showSnackBar('Deleting Student...');
-    BDConnections.deleteData(student.id).then((result){
-      if('success' == result){
+    BDConnections.deleteData(student.id).then((result) {
+      if ('success' == result) {
         _selectData; //REFRESH LIST AFTER DELETE
       }
     });
   }
 
   //METODO PARA FOTO
-  pickImagefromGallery(){
-    ImagePicker.pickImage(source: ImageSource.gallery).then((imgFile){
-      String  imgString = Convertir.base64String(imgFile.readAsBytesSync());
+  pickImagefromGallery() {
+    ImagePicker.pickImage(source: ImageSource.gallery).then((imgFile) {
+      String imgString = Convertir.base64String(imgFile.readAsBytesSync());
       imagen = imgString;
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
       _fotoConroller.text = "Campo lleno";
       return imagen;
     });
   }
 
   //CLEAR TEXTFIELD VALUES
-  _clearValues(){
-        _firstnameConroller.text = "";
-        _lastname1Conroller.text = "";
-        _lastname2Conroller.text = "";
-        _emailConroller.text = "";
-        _phoneConroller.text = "";
-        _matriculaConroller.text = "";
+  _clearValues() {
+    _firstnameConroller.text = "";
+    _lastname1Conroller.text = "";
+    _lastname2Conroller.text = "";
+    _emailConroller.text = "";
+    _phoneConroller.text = "";
+    _matriculaConroller.text = "";
+    _fotoConroller.text = "";
   }
 
-  _showValues(Student student){
-        _firstnameConroller.text = student.firstName;
-        _lastname1Conroller.text = student.lastName1;
-        _lastname2Conroller.text = student.lastName2;
-        _emailConroller.text = student.email;
-        _phoneConroller.text = student.phone;
-        _matriculaConroller.text = student.matricula;
+  _showValues(Student student) {
+    _firstnameConroller.text = student.firstName;
+    _lastname1Conroller.text = student.lastName1;
+    _lastname2Conroller.text = student.lastName2;
+    _emailConroller.text = student.email;
+    _phoneConroller.text = student.phone;
+    _matriculaConroller.text = student.matricula;
   }
 
   //******************************************************************
@@ -182,98 +205,120 @@ class homepageState extends State<Insert> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: (){
+            onPressed: () {
               BDConnections.createTable();
-            },),
+            },
+          ),
           IconButton(
             icon: Icon(Icons.refresh),
-            onPressed: (){
+            onPressed: () {
               BDConnections.selectData();
-            },)
+            },
+          )
         ],
       ),
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            Container(
-              child: Column(children: <Widget>[
-                //TEXT FORM FIELD PARA FOTO
-                Padding(
-                     padding: const EdgeInsets.all(20.0),
-                     child: TextField(
-                  controller: _fotoConroller,
-                  decoration: InputDecoration(
-                        labelText: "Photo",
-                        suffixIcon: RaisedButton(
-                          color: Colors.deepPurple[200],
-                            onPressed: pickImagefromGallery,
-                            child: Text("Select image", textAlign: TextAlign.center,),
-                        )),
-                  ),
-                   ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: TextField(controller: _firstnameConroller,
-                  decoration: InputDecoration.collapsed(hintText: "First Name"),),
-                ),
-                Padding(
-                    padding: EdgeInsets.all(20),
-                    child: TextField(controller: _lastname1Conroller,
-                      decoration: InputDecoration.collapsed(hintText: "Last Name 1"),)
-                ),
-                Padding(
-                    padding: EdgeInsets.all(20),
-                    child: TextField(controller: _lastname2Conroller,
-                      decoration: InputDecoration.collapsed(hintText: "Last Name 2"),)
-                ),
-                Padding(
-                    padding: EdgeInsets.all(20),
-                    child: TextField(controller: _emailConroller,
-                      decoration: InputDecoration.collapsed(hintText: "E-mail"),)
-                ),
-                Padding(
-                    padding: EdgeInsets.all(20),
-                    child: TextField(controller: _phoneConroller,
-                      decoration: InputDecoration.collapsed(hintText: "Phone"),)
-                ),
-                Padding(
-                    padding: EdgeInsets.all(20),
-                    child: TextField(controller: _matriculaConroller,
-                      decoration: InputDecoration.collapsed(hintText: "Matricula"),)
-                ),
-                //ADD AN UPDATE BUTTON AND A CANCEL BUTTON
-                //SHOW ONLY WHEN UPDATING DATA
-                _isUpdating ?
-                new Row(
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              Container(
+                child: Column(
                   children: <Widget>[
-                    OutlineButton(
-                      child: Text('UPDATE'),
-                      onPressed: (){
-                        _updateData(_selectStudent);
-                      },
+                    //TEXT FORM FIELD PARA FOTO
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextField(
+                        controller: _fotoConroller,
+                        decoration: InputDecoration(
+                            labelText: "Photo",
+                            suffixIcon: RaisedButton(
+                              color: Colors.deepPurple[200],
+                              onPressed: pickImagefromGallery,
+                              child: Text(
+                                "Select image",
+                                textAlign: TextAlign.center,
+                              ),
+                            )),
+                      ),
                     ),
-                    OutlineButton(
-                      child: Text('CANCEL'),
-                      onPressed: (){
-                        setState(() {
-                          _isUpdating = false;
-                        });
-                        _clearValues();
-                      },
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: TextField(
+                        controller: _firstnameConroller,
+                        decoration:
+                            InputDecoration.collapsed(hintText: "First Name"),
+                      ),
                     ),
+                    Padding(
+                        padding: EdgeInsets.all(20),
+                        child: TextField(
+                          controller: _lastname1Conroller,
+                          decoration: InputDecoration.collapsed(
+                              hintText: "Last Name 1"),
+                        )),
+                    Padding(
+                        padding: EdgeInsets.all(20),
+                        child: TextField(
+                          controller: _lastname2Conroller,
+                          decoration: InputDecoration.collapsed(
+                              hintText: "Last Name 2"),
+                        )),
+                    Padding(
+                        padding: EdgeInsets.all(20),
+                        child: TextField(
+                          controller: _emailConroller,
+                          decoration:
+                              InputDecoration.collapsed(hintText: "E-mail"),
+                        )),
+                    Padding(
+                        padding: EdgeInsets.all(20),
+                        child: TextField(
+                          controller: _phoneConroller,
+                          decoration:
+                              InputDecoration.collapsed(hintText: "Phone"),
+                        )),
+                    Padding(
+                        padding: EdgeInsets.all(20),
+                        child: TextField(
+                          controller: _matriculaConroller,
+                          decoration:
+                              InputDecoration.collapsed(hintText: "Matricula"),
+                        )),
+                    //ADD AN UPDATE BUTTON AND A CANCEL BUTTON
+                    //SHOW ONLY WHEN UPDATING DATA
+                    _isUpdating
+                        ? new Row(
+                            children: <Widget>[
+                              OutlineButton(
+                                child: Text('UPDATE'),
+                                onPressed: () {
+                                  _updateData(_selectStudent);
+                                },
+                              ),
+                              OutlineButton(
+                                child: Text('CANCEL'),
+                                onPressed: () {
+                                  setState(() {
+                                    _isUpdating = false;
+                                  });
+                                  _clearValues();
+                                },
+                              ),
+                            ],
+                          )
+                        : Container(),
                   ],
-                ):Container(),
-               ],
+                ),
               ),
-            ),
-            /*Expanded(
-              child: _body(),
-            ),*/
-          ],
+              /*Expanded(
+                child: _body(),
+              ),*/
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           _insertData();
           _clearValues();
         },

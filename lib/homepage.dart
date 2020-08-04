@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:connection_mysql/select.dart';
+import 'package:mysql/select_view.dart';
 import 'package:http/http.dart' as http;
 import 'Student.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +7,6 @@ import 'bd_connections.dart';
 import 'insert.dart';
 import 'update.dart';
 import 'delete.dart';
-import 'select.dart';
 import 'convertidor.dart';
 
 class homepage extends StatefulWidget {
@@ -118,7 +117,7 @@ class homepageState extends State<homepage> {
   }
 
   //UPDATE DATA
-  _updateData(Student student){
+  /*_updateData(Student student){
     setState(() {
       _isUpdating = true;
     });
@@ -132,7 +131,7 @@ class homepageState extends State<homepage> {
         _clearValues();
       }
     });
-  }
+  }*/
 
   //DELETE DATA 
   _deleteData(Student student){
@@ -356,7 +355,12 @@ class homepageState extends State<homepage> {
                     fontSize: 20
                 ),
               ),
-              onTap: () {}
+              onTap: () {
+                 Navigator.push(context,
+                    new MaterialPageRoute(
+                        builder: (context)
+                        => new Select()));
+              }
             ),
           ],
         ),

@@ -112,7 +112,7 @@ class homepageState extends State<Delete> {
   }
 
   //UPDATE DATA
-  _updateData(Student student){
+  /*_updateData(Student student){
     setState(() {
       _isUpdating = true;
     });
@@ -126,7 +126,7 @@ class homepageState extends State<Delete> {
         _clearValues();
       }
     });
-  }
+  }*/
 
   //DELETE DATA 
   _deleteData(Student student){

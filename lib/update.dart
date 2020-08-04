@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'Student.dart';
 import 'package:flutter/material.dart';
 import 'bd_connections.dart';
+import 'convertidor.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Update extends StatefulWidget {
   Update() : super();
@@ -21,9 +23,11 @@ class homepageState extends State<Update> {
   TextEditingController _emailConroller;
   TextEditingController _phoneConroller;
   TextEditingController _matriculaConroller;
+  TextEditingController _fotoConroller;
 
   Student _selectStudent;
   bool _isUpdating;
+  String imagen;
   //String _titleProgress;
 
   @override
@@ -40,6 +44,7 @@ class homepageState extends State<Update> {
     _emailConroller = TextEditingController();
     _phoneConroller = TextEditingController();
     _matriculaConroller = TextEditingController();
+    _fotoConroller = TextEditingController();
     //Llamar al método que llena la DataTable
     _selectData;
   }
@@ -77,7 +82,7 @@ class homepageState extends State<Update> {
       return;
     }
     //_showProgress('Adding Student...');
-    BDConnections.insertData(_firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text)
+    BDConnections.insertData(_firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text, _fotoConroller.text)
         .then((result) {
       if ('sucess' == result) {
         _showSnackBar(context, result);
@@ -113,7 +118,7 @@ class homepageState extends State<Update> {
       _isUpdating = true;
     });
     //_showSnackBar('Updating Student...');
-    BDConnections.updateData(student.id, _firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text).then((result){
+    BDConnections.updateData(student.id, _firstnameConroller.text, _lastname1Conroller.text, _lastname2Conroller.text, _emailConroller.text, _phoneConroller.text, _matriculaConroller.text, imagen).then((result){
       if('success' == result){
         _selectData; //REFRESH LIST AFTER UPDATE
         setState(() {
@@ -142,6 +147,7 @@ class homepageState extends State<Update> {
         _emailConroller.text = "";
         _phoneConroller.text = "";
         _matriculaConroller.text = "";
+        _fotoConroller.text = "";
   }
 
   _showValues(Student student){
@@ -151,7 +157,20 @@ class homepageState extends State<Update> {
         _emailConroller.text = student.email;
         _phoneConroller.text = student.phone;
         _matriculaConroller.text = student.matricula;
+        imagen = student.foto;
   }
+
+    //METODO PARA FOTO
+  pickImagefromGallery(){
+    ImagePicker.pickImage(source: ImageSource.gallery).then((imgFile){
+      String  imgString = Convertir.base64String(imgFile.readAsBytesSync());
+      imagen = imgString;
+      //Navigator.of(context).pop();
+      _fotoConroller.text = "Campo lleno";
+      return imagen;
+    });
+  }
+
 
   //******************************************************************
   //************************CREATING DATA TABLE*****************************
@@ -169,8 +188,9 @@ class homepageState extends State<Update> {
           DataColumn(label: Text('E-mail')),
           DataColumn(label: Text('Phone')),
           DataColumn(label: Text('Matricula')),
+          DataColumn(label: Text('Fotografía')),
           //SHOW A DELETE BUTTON
-          DataColumn(label: Text('DELETE'))
+          //DataColumn(label: Text('DELETE'))
         ],
         rows: _Students.map((student) => DataRow(
             cells: [
@@ -254,11 +274,16 @@ class homepageState extends State<Update> {
                 });
               }),
 
-              DataCell(IconButton(icon: Icon(Icons.delete), 
-              onPressed: (){
-                _deleteData(student);
-              }
-              )),
+              DataCell(Convertir.imageFromBase64sString(student.foto),
+              onTap: (){
+                _showValues(student);
+                // Set the selected student to update
+                _selectStudent = student;
+                // Set flag updating tu true to indicate in Update Mode
+                setState(() {
+                  _isUpdating = true;
+                });
+              }),
 
             ]),
         ).toList(),
@@ -294,6 +319,19 @@ class homepageState extends State<Update> {
             Container(
               child: Column(
                 children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: TextField(
+                  controller: _fotoConroller,
+                  decoration: InputDecoration(
+                        labelText: "Photo",
+                        suffixIcon: RaisedButton(
+                          color: Colors.deepPurple[200],
+                            onPressed: pickImagefromGallery,
+                            child: Text("Select image", textAlign: TextAlign.center,),
+                        )),
+                  ),
+                ),
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextField(controller: _firstnameConroller,
